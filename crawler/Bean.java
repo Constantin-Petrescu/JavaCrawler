@@ -13,18 +13,15 @@ public class Bean
 		this.assets = new ArrayList<String>();
 	}
 	
+	
 	public Bean(String lStartURL) 
 	{
 		this.url = lStartURL ;
 		this.assets = new ArrayList<String>();
 	}
 	
-	public Bean(String mStartURL, ArrayList<String> mAssets) 
-	{
-		this.url = mStartURL;
-		this.assets = mAssets;
-	}
 	
+	//This method is used to build the Assets list by adding a String value which is the URL
 	public void addAsset(String lAsset)
 	{
 		
@@ -38,11 +35,12 @@ public class Bean
 		}
 	}
 	
+	
+	//Simple gather and setters of the class 
 	public String getmStartURL() 
 	{
 		return url;
 	}
-	
 	
 	public void setmStartURL(String mStartURL) 
 	{

@@ -6,6 +6,12 @@ public class Extractor
 {
 	ArrayList<Bean> lBeansList;
 
+	
+	/*
+	 * Crawl functions which iterates through BeanList which starts with one item and it repeat until
+	 *		the last element of BeanList has the assets list not null
+	 * During an iteration the crawl Extract from an URL all new possible URL to crawls and the assets 
+	 */
 	public void Crawl(ArrayList<Bean> lResults) 
 	{
 		lBeansList = lResults;
@@ -28,6 +34,7 @@ public class Extractor
 				Extract(lBean, lPage);
 			}
 			
+			
 			if(!lBean.getmAssets().isEmpty())
 			{
 				Utilities.writeResult(lBean);
@@ -46,6 +53,8 @@ public class Extractor
 			}
 	}
 
+	
+	// Extract Method which calls both  
 	public void Extract(Bean lBean, String lPage)
 	{
 		String lSrcFormatWSpace = "src =";
@@ -53,12 +62,12 @@ public class Extractor
 		String lHrefFormatWSpace = "href =";
 		String lHrefFormatNSpace = "href=";
 		
-		ExtractTag(lBean, lPage, lSrcFormatWSpace, lSrcFormatNSpace, true);
-		ExtractTag(lBean, lPage, lHrefFormatWSpace, lHrefFormatNSpace, false);
-		System.out.println(lBean.getmAssets());
+		ExtractTag(lBean, lPage, lSrcFormatWSpace, lSrcFormatNSpace);
+		ExtractTag(lBean, lPage, lHrefFormatWSpace, lHrefFormatNSpace);
 	}
 	
-	public Bean ExtractTag(Bean lBean, String lPage, String lTagWSpace, String  lTagNSpace, boolean IsAsset)
+	// Extract method which gets all URL based on tag received and puts them either as new crawling URL or assets
+	public Bean ExtractTag(Bean lBean, String lPage, String lTagWSpace, String  lTagNSpace)
 	{
 		boolean lContinue = true;
 		String lBlock = lPage;
@@ -67,10 +76,12 @@ public class Extractor
 		int lIndexWSpace = -1;
 		int lIndexNSpace = -1;
 		
+		// Iterate over the HTML page until it doesn't find any more tags related to our URL 
 		while (lContinue == true)
 		{
 			lIndexNSpace = lBlock.indexOf(lTagNSpace,lIndexNSpace);
 			lIndexWSpace = lBlock.indexOf(lTagWSpace,lIndexWSpace);			
+			// If there aren't anymore URLs change variable to stop the loop
 			if(lIndexNSpace == -1 && lIndexWSpace == -1)
 			{
 				lContinue = false;
@@ -80,6 +91,7 @@ public class Extractor
 				
 				if(lIndexNSpace != -1)
 				{
+					//Extract new URLs, verify their authenticity, and add domain if it is missing 
 					lIndexNSpace = lIndexNSpace + lTagNSpace.length();
 					lUrl = Utilities.ExtractURL(lBlock, lIndexNSpace);
 					try 
@@ -91,6 +103,7 @@ public class Extractor
 						System.out.println(e.toString());
 					}
 
+					//if URL is null means is not a good or already exists and if not add it to Beans
 					lIndexNSpace ++;
 					if( lUrl != null)
 					{
@@ -110,6 +123,10 @@ public class Extractor
 
 				}
 				
+				/*
+				 * Same extraction as the method above but for different tag, I know it should have be done a method so it won't repeat the code
+				 * but there is always place for further improvements for any written code 
+				 */
 				if(lIndexWSpace != -1)
 				{
 					lIndexWSpace = lIndexWSpace + lTagWSpace.length();

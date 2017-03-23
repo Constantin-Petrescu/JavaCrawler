@@ -18,16 +18,21 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 public class Utilities 
 {
-	
-	public static String getHTMLPage(String url) {
-		try {
+	// This is an overload class of normal getHTMLPage that take URL as a String and converts it into URL
+	public static String getHTMLPage(String url) 
+	{
+		try 
+		{
 			return getHTMLPage(new URL(url)).toString();
-		} catch (Exception ex) {
+		} 
+		catch (Exception ex) 
+		{
 			System.out.println("URL Exception: " + url + " " + ex.toString());
 		}
 		return new StringBuffer().toString();
 	}
 	
+	// Method that is getting the a HTML Page from a URL
 	public static StringBuffer getHTMLPage(URL url) 
 	{
 		try 
@@ -46,7 +51,8 @@ public class Utilities
 			String line;
 			StringBuffer lOutput = new StringBuffer();
 
-			while ((line = rd.readLine()) != null) {
+			while ((line = rd.readLine()) != null) 
+			{
 				lOutput.append(line);
 			}
 
@@ -59,6 +65,13 @@ public class Utilities
 		}
 	}
 
+	
+	/*
+	 *  This method is used to extract an URL from a String, the whole HTML page,
+	 *  with an Index which is the integer that points to the position of a tag that
+	 *  has an desired URL for instance "SRC=" or "HREF=" 
+	 *  It extracts from first "\"" to the next one "\"" 
+	 */
 	public static String ExtractURL(String lPage, int lIndex)
 	{
 		int lIndexEnd;
@@ -75,11 +88,18 @@ public class Utilities
 		return null;
 	}
 
+	
+	//verifying an URL and adding the domain if it is missing
 	public static String verifyAsset(ArrayList<Bean> lBeansList, Bean lBean, String lUrl) 
 	{
 		String lPageUrl = lBean.getmStartURL();
 		String lUrlTemp = lUrl;
 		
+		/* 
+		 * Verifying if the domains are the same at the target URL and one from the Bean
+		 * Because I haven't work with any Library or URI class I have parsed the URL
+		 * And compared what's after https:// until the first "/" or the end of the String
+		 */ 
 		if(lUrl.contains("http") || lUrl.contains("www"))
 		{
 			lPageUrl = lPageUrl.replace("https://", "").replace("http://", "");
@@ -118,18 +138,22 @@ public class Utilities
 			}
 		}
 		
+		//Removing any double "//" that have added from bad handling of searching URL and added just at the http://
 		lUrl = lUrl.replaceAll("//", "/");
 		lUrl = lUrl.substring(0, lUrl.indexOf("/")+1) + "/" + lUrl.substring(lUrl.indexOf("/")+1);
 		
 		return lUrl;
 	}
 
+	
+	// Verifying if a URL already exists in the result BeanList 
+	// return FALSE if EXISTS and TRUE if it is good to ADD in the list
 	public static boolean verifyUrlExists(ArrayList<Bean> lBeansList, String lUrl) 
 	{
-		
+		// Looping through the beanList and checking if the target URL is equal with one from the List
 		for (int lIt = 0; lIt < lBeansList.size(); lIt++)
 		{		
-			System.out.println(lUrl + " " + lUrl.substring(0,lUrl.length()-1) + " " + lBeansList.get(lIt).getmStartURL());
+			
 			if (lUrl.equals(lBeansList.get(lIt).getmStartURL()))
 			{
 				return false;
@@ -149,19 +173,21 @@ public class Utilities
 		return true;
 	}
 	
+	
+	// Deleting the file where the output will be written if exists
 	public static void initialiseFileForWrite()
 	{
 		try 
 		{
 			URL resultFileLocation = Main.class.getProtectionDomain().getCodeSource().getLocation();
-			File resultFile = new File(resultFileLocation.getFile() + "crawler/result.json");
+			File resultFile = new File(resultFileLocation.getFile() + "result.json");
 			if(resultFile.exists())
 			{
 				resultFile.delete();
 			}
 			else
 			{
-				System.out.println("Couldn't find the file on Path " + resultFileLocation.getFile() + "crawler/result.json");
+				System.out.println("Couldn't find the file on Path " + resultFileLocation.getFile() + "result.json");
 			}
 		} 
 		catch (Exception e) 
@@ -171,6 +197,8 @@ public class Utilities
 			
 	}
 	
+	
+	// Writing in the file the result
 	public static void writeResult(Bean lBean)
 	{
 		if(lBean.getmAssets().isEmpty() == false)
@@ -181,20 +209,22 @@ public class Utilities
 	        
 	        try 
 	        {
-	        	PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(resultFileLocation.getFile() + "crawler/result.json", true)));
-	        	 
+	        	PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(resultFileLocation.getFile() + "result.json", true)));
 	        	mapper.writerWithDefaultPrettyPrinter().writeValue(out, lBean );
 			} 
 	        catch (JsonGenerationException e) 
 	        {
 				e.printStackTrace();
-			} catch (JsonMappingException e) 
+			} 
+	        catch (JsonMappingException e) 
 	        {
 				e.printStackTrace();
-			} catch (IOException e) 
+			} 
+	        catch (IOException e) 
 	        {
 				e.printStackTrace();
 			}
 		}
 	}
+	
 }
